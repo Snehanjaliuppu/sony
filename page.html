@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Welcome Students</title>
+  <style>
+    :root{ --bg:#f3f6fb; --card:#fff; --accent:#0f62fe; --muted:#6b7280 }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; background:var(--bg); color:#0b1220; display:flex; align-items:center; justify-content:center; min-height:100vh}
+    .card{background:var(--card); padding:28px; border-radius:12px; width:min(620px,94%); box-shadow:0 8px 30px rgba(12,20,38,0.08); text-align:center}
+    h1{margin:0 0 8px;font-size:28px}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    .row{display:flex;gap:8px;justify-content:center; margin-top:12px}
+    input[type="text"]{padding:10px 12px;border-radius:8px;border:1px solid rgba(12,20,38,0.08);width:260px}
+    button{background:var(--accent); color:white; border:0; padding:10px 14px;border-radius:8px; cursor:pointer;font-weight:600}
+    .greet{margin-top:18px;font-size:18px}
+    small{display:block;margin-top:8px;color:var(--muted)}
+    @media (max-width:480px){ h1{font-size:22px} input[type="text"]{width:160px} }
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="welcomeTitle">
+    <h1 id="welcomeTitle">Welcome to Class!</h1>
+    <p class="lead">We're glad you're here. Enter your name below so we can greet you.</p>
+
+    <form id="welcomeForm" onsubmit="return false;" aria-describedby="nameHelp">
+      <div class="row">
+        <input id="studentName" type="text" placeholder="Your name" aria-label="Student name" />
+        <button id="sayHi">Say Hi</button>
+      </div>
+      <small id="nameHelp">Tip: We will remember your name on this device.</small>
+    </form>
+
+    <div id="greeting" class="greet" aria-live="polite"></div>
+  </main>
+
+  <script>
+    const nameInput = document.getElementById('studentName');
+    const btn = document.getElementById('sayHi');
+    const greeting = document.getElementById('greeting');
+
+    // Load saved name if present
+    const saved = localStorage.getItem('studentName');
+    if (saved) {
+      showGreeting(saved);
+      nameInput.value = saved;
+    }
+
+    btn.addEventListener('click', () => {
+      const raw = nameInput.value.trim();
+      if (!raw) {
+        // small friendly shake + message
+        greeting.textContent = "Please type your name — we'd love to say hi!";
+        return;
+      }
+      localStorage.setItem('studentName', raw);
+      showGreeting(raw);
+    });
+
+    function showGreeting(name) {
+      const safe = escapeHtml(name);
+      greeting.innerHTML = `Hello, <strong>${safe}</strong>! 👋<br>Welcome to today's class — let's learn something great.`;
+    }
+
+    // simple escape to prevent HTML injection
+    function escapeHtml(s){
+      return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+  </script>
+</body>
+</html>
